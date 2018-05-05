@@ -210,6 +210,7 @@ static pmh_attr_font_styles *new_font_styles()
     ret->italic = false;
     ret->bold = false;
     ret->underlined = false;
+    ret->strikeout = false;
     return ret;
 }
 
@@ -435,6 +436,8 @@ static pmh_style_attribute *interpret_attributes(style_parser_data *p_data,
                     attr->value->font_styles->bold = true;
                 else if (EQUALS(standardized_value, "underlined"))
                     attr->value->font_styles->underlined = true;
+                else if (EQUALS(standardized_value, "strikeout"))
+                    attr->value->font_styles->strikeout = true;
                 else {
                     report_error(p_data, cur->line_number,
                                  "Value '%s' is invalid for attribute '%s'",
