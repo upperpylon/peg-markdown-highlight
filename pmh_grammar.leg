@@ -58,7 +58,7 @@ AtxInline = !Newline !(Sp '#'* Sp Newline) Inline
 AtxStart =  < ( "######" | "#####" | "####" | "###" | "##" | "#" ) >
             { $$ = elem((pmh_element_type)(pmh_H1 + (strlen(yytext) - 1))); }
 
-AtxHeading = < s:AtxStart Sp ( AtxInline )+ (Sp '#'* Sp)? Newline >
+AtxHeading = < s:AtxStart Space ( AtxInline )+ (Sp '#'* Sp)? Newline >
             { ADD(elem_s(s->type)); }
 
 SetextHeading = SetextHeading1 | SetextHeading2
