@@ -476,7 +476,7 @@ Strike = &{ EXT(pmh_EXT_STRIKE) }
          "~~" >
          { ADD(elem_s(pmh_STRIKE)); }
 
-Image = '!' ( ExplicitLink | ReferenceLink )
+Image = '!' ( ExplicitLink | ExplicitLinkSize | ReferenceLink )
         {
             if ($$ != NULL) {
                 $$->type = pmh_IMAGE;
@@ -524,6 +524,15 @@ ExplicitLink =  < s:Label Spnl '(' Sp l:Source Spnl Title Sp ')' >
                     FREE_ADDRESS(l);
                 }
 
+ExplicitLinkSize =  < s:Label Spnl '(' Sp l:Source Spnl TitleExt Sp ImageSize Sp ')' >
+                    {
+                        $$ = elem_s(pmh_LINK);
+                        if (l->address != NULL)
+                            $$->address = strdup_or_null(l->address);
+                        FREE_LABEL(s);
+                        FREE_ADDRESS(l);
+                    }
+
 Source  = { $$ = mk_notype; }
           ( '<' < SourceContents > { $$->address = COPY_YYTEXT_ORIG(); } '>'
           | < SourceContents > { $$->address = COPY_YYTEXT_ORIG(); } )
@@ -535,6 +544,17 @@ Title = ( TitleSingle | TitleDouble | "" )
 TitleSingle = '\'' ( !( '\'' Sp ( ')' | Newline ) ) . )* '\''
 
 TitleDouble = '"' ( !( '"' Sp ( ')' | Newline ) ) . )* '"'
+
+TitleExt = ( TitleSingleExt | TitleDoubleExt | "" )
+
+TitleSingleExt = '\'' ( !( '\'' | Newline ) . )* '\''
+
+TitleDoubleExt = '"' ( !( '"' | Newline ) . )* '"'
+
+ImageSize = ( ImageSizeComplete | ImageSizeWidth | ImageSizeHeight | "" )
+ImageSizeComplete = '=' [0-9]+ 'x' [0-9]+
+ImageSizeWidth = '=' [0-9]+ 'x'
+ImageSizeHeight = "=x" [0-9]+
 
 AutoLink = AutoLinkUrl | AutoLinkEmail
 
