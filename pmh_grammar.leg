@@ -29,11 +29,22 @@
 
 %}
 
-Doc =       ( Block )*
+Doc =       FrontMatter ( Block )*
 
 # placeholder for marking locations
 LocMarker = &. { $$ = elem(pmh_NO_TYPE); }
 
+
+FrontMatter = s:LocMarker
+              ( &{ EXT(pmh_EXT_FRONTMATTER) }
+                < "---" Newline FrontMatterBlock* FrontMatterEndMark Newline >
+                {
+                    ADD(elem(pmh_FRONTMATTER));
+                })?
+
+FrontMatterBlock = !FrontMatterEndMark (!Newline .)* Newline
+
+FrontMatterEndMark = ("---" | "...")
 
 Block =     BlankLine*
             ( BlockQuote

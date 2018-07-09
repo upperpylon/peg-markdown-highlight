@@ -74,7 +74,7 @@ void print_result_debug_info(pmh_element *elem[])
 void test(char *content)
 {
     pmh_element **result;
-    int exts = pmh_EXT_STRIKE;
+    int exts = pmh_EXT_STRIKE | pmh_EXT_FRONTMATTER;
     pmh_markdown_to_elements(content, exts, &result);
 
     print_result_debug_info(result);

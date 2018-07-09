@@ -183,6 +183,7 @@ static char **get_element_type_names()
         elem_type_names[pmh_REFERENCE] = "REFERENCE";
         elem_type_names[pmh_NOTE] = "NOTE";
         elem_type_names[pmh_STRIKE] = "STRIKE";
+        elem_type_names[pmh_FRONTMATTER] = "FRONTMATTER";
     }
     return elem_type_names;
 }
