@@ -49,6 +49,7 @@ FrontMatterEndMark = ("---" | "...")
 Block =     BlankLine*
             ( BlockQuote
             | Verbatim
+            | FencedCodeBlock
             | Note
             | Reference
             | HorizontalRule
@@ -113,6 +114,18 @@ VerbatimChunk = ( BlankLine )*
 Verbatim =     < s:LocMarker
                  ( VerbatimChunk )+ >
                  { ADD(elem_s(pmh_VERBATIM)); }
+
+FencedCodeBlockStart = "```" (!Newline !'`' .)* Newline
+
+FencedCodeBlockChunk = !FencedCodeBlockEnd (!Newline .)* Newline
+
+FencedCodeBlockEnd = "```" Spacechar* Newline
+
+FencedCodeBlock = < s:LocMarker
+                    FencedCodeBlockStart
+                    FencedCodeBlockChunk*
+                    FencedCodeBlockEnd >
+                  { ADD(elem(pmh_FENCEDCODEBLOCK)); }
 
 HorizontalRule = < NonindentSpace
                  ( '*' Sp '*' Sp '*' (Sp '*')*

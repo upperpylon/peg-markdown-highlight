@@ -55,9 +55,10 @@ void print_result_debug_info(pmh_element *elem[])
         pmh_element *cursor = elem[i];
         while (cursor != NULL)
         {
-            printf("[%ld-%ld] 0x%lx: %s\n",
+            printf("[%ld-%ld] %u 0x%lx: %s\n",
                    cursor->pos,
                    cursor->end,
+                   cursor->type,
                    (unsigned long)cursor,
                    pmh_element_name_from_type(cursor->type));
 
