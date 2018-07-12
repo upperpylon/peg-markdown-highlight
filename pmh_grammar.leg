@@ -27,6 +27,28 @@
 // This gives us the text matched with < > as it appears in the original input:
 #define COPY_YYTEXT_ORIG() copy_input_span((parser_data *)G->data, thunk->begin, thunk->end)
 
+// pos is the postition of next char to parse after matching one $
+// Do not allow $, digit, and \ before opening $
+bool inline_equation_predict_pre(char *buf, int pos)
+{
+    if (pos < 2) {
+        return true;
+    }
+
+    unsigned char ch = buf[pos - 2];
+    return ch != '$' && (ch < '0' || ch > '9') && ch != '\\';
+}
+
+// Do not allow \, space before ending $
+bool inline_equation_predict_post(char *buf, int pos)
+{
+    unsigned char ch = buf[pos - 2];
+    return ch != '\\' && ch != ' ' && ch != '\t';
+}
+
+#define IEP_PRE         inline_equation_predict_pre(G->buf, G->pos)
+#define IEP_POST        inline_equation_predict_post(G->buf, G->pos)
+
 %}
 
 Doc =       FrontMatter ( Block )*
@@ -35,6 +57,7 @@ Doc =       FrontMatter ( Block )*
 LocMarker = &. { $$ = elem(pmh_NO_TYPE); }
 
 
+# MUST put LocMarker at the front
 FrontMatter = s:LocMarker
               ( &{ EXT(pmh_EXT_FRONTMATTER) }
                 < "---" Newline FrontMatterBlock* FrontMatterEndMark Newline >
@@ -50,6 +73,7 @@ Block =     BlankLine*
             ( BlockQuote
             | Verbatim
             | FencedCodeBlock
+            | DisplayFormula
             | Note
             | Reference
             | HorizontalRule
@@ -126,6 +150,18 @@ FencedCodeBlock = < s:LocMarker
                     FencedCodeBlockChunk*
                     FencedCodeBlockEnd >
                   { ADD(elem(pmh_FENCEDCODEBLOCK)); }
+
+DisplayFormula = &{ EXT(pmh_EXT_MATH) }
+                 NonindentSpace < "$$" (!'$' .)* "$$" > Spacechar* Newline
+                 { ADD(elem(pmh_DISPLAYFORMULA)); }
+
+InlineEquation = &{ EXT(pmh_EXT_MATH) }
+                 < '$' &{ IEP_PRE } ( InlineEquationSingle | InlineEquationMultiple ) ![0-9] >
+                 { ADD(elem(pmh_INLINEEQUATION)); }
+
+InlineEquationSingle = !'$' !'\\' Nonspacechar '$'
+
+InlineEquationMultiple = !'$' Nonspacechar (!'$' !Newline .)+ '$' &{ IEP_POST }
 
 HorizontalRule = < NonindentSpace
                  ( '*' Sp '*' Sp '*' (Sp '*')*
@@ -427,6 +463,7 @@ Inline  = Str
         | NoteReference
         | InlineNote
         | Code
+        | InlineEquation
         | RawHtml
         | Entity
         | EscapedChar
@@ -702,6 +739,7 @@ SkipBlock = ( !BlankLine RawLine )+ BlankLine*
 # Syntax extensions
 
 ExtendedSpecialChar = &{ EXT(pmh_EXT_NOTES) } ( '^' )
+                      | &{ EXT(pmh_EXT_MATH) } ( '$' )
 
 NoteReference = &{ EXT(pmh_EXT_NOTES) }
                 RawNoteReference

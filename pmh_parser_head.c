@@ -185,6 +185,8 @@ static char **get_element_type_names()
         elem_type_names[pmh_NOTE] = "NOTE";
         elem_type_names[pmh_STRIKE] = "STRIKE";
         elem_type_names[pmh_FRONTMATTER] = "FRONTMATTER";
+        elem_type_names[pmh_DISPLAYFORMULA] = "DISPLAYFORMULA";
+        elem_type_names[pmh_INLINEEQUATION] = "INLINEEQUATION";
     }
     return elem_type_names;
 }
