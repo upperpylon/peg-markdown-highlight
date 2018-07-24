@@ -742,19 +742,24 @@ ExtendedSpecialChar = &{ EXT(pmh_EXT_NOTES) } ( '^' )
                       | &{ EXT(pmh_EXT_MATH) } ( '$' )
 
 NoteReference = &{ EXT(pmh_EXT_NOTES) }
-                RawNoteReference
+                < RawNoteReference >
+                { ADD(elem(pmh_NOTE)); }
 
 RawNoteReference = "[^" ( !Newline !']' . )+ ']'
 
 Note =          &{ EXT(pmh_EXT_NOTES) }
-                NonindentSpace RawNoteReference ':' Sp
-                ( RawNoteBlock )
-                ( &Indent RawNoteBlock )*
+                < s:LocMarker
+                  NonindentSpace RawNoteReference ':' Sp
+                  ( RawNoteBlock )
+                  ( &Indent RawNoteBlock )* >
+                { ADD(elem_s(pmh_NOTE)); }
 
 InlineNote =    &{ EXT(pmh_EXT_NOTES) }
-                "^["
-                ( !']' Inline )+
-                ']'
+                < s:LocMarker
+                  "^["
+                  ( !']' Inline )+
+                  ']' >
+                { ADD(elem_s(pmh_NOTE)); }
 
 # Not used anywhere in grammar:
 #Notes =         ( Note | SkipBlock )*

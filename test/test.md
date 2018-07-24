@@ -1,30 +1,13 @@
-   $$abc$$   
+Inline footnote ^[fooo].
 
-$wrong
-$
+This is a footnote [^1].
 
-$ wrong$
+[^1]: Haha
 
-$wrong $
+    haha
 
-3$wrong$
+    markdown
 
-3$ $abc$
+**b** This is very simple.
 
-$wrong$5
-
-a$123$b
-
-abc$def$haha
-
-- $hijk$ haha
-    $haha$
-
-
-0$wrong$
-
-$vnote$9
-
-$wrong\$
-
-$tamlok$$
+# ABC
