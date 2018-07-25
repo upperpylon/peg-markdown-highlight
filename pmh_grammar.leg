@@ -464,6 +464,7 @@ Inline  = Str
         | InlineNote
         | Code
         | InlineEquation
+        | Mark
         | RawHtml
         | Entity
         | EscapedChar
@@ -690,6 +691,26 @@ Code = < ( s:Ticks1 Sp ( ( !'`' Nonspacechar )+ | !Ticks1 '`'+ | !( Sp Ticks1 ) 
        | s:Ticks5 Sp ( ( !'`' Nonspacechar )+ | !Ticks5 '`'+ | !( Sp Ticks5 ) ( Spacechar | Newline !BlankLine ) )+ Sp Ticks5
        ) >
        { ADD(elem_s(pmh_CODE)); }
+
+Mark = &{ EXT(pmh_EXT_MARK) }
+       o:MarkTagOpen
+       MarkTagText
+       c:MarkTagClose
+       {
+         ADD(o);
+         ADD(mk_element((parser_data *)G->data, pmh_MARK, o->end, c->pos));
+         ADD(c);
+       }
+
+MarkTagOpen = < s:LocMarker
+                '<' Spnl ("mark" | "MARK") Spnl HtmlAttribute* '>' >
+              { $$ = elem_s(pmh_HTML); }
+
+MarkTagClose = < s:LocMarker
+                 '<' Spnl '/' ("mark" | "MARK") Spnl '>' >
+               { $$ = elem_s(pmh_HTML); }
+
+MarkTagText = (!MarkTagClose (RawHtml | .))*
 
 RawHtml =   < s:LocMarker (HtmlComment | HtmlBlockScript | HtmlTag) >
             { ADD(elem_s(pmh_HTML)); }
