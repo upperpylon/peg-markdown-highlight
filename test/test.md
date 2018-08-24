@@ -1,4 +1,1 @@
-abc<mark>def</mark>
-
-<mark>abc<span>de
-f</span>xyz</mark>
+![a**abc**b^$#90()<span>abc</span>c](adef)

@@ -651,9 +651,17 @@ Reference = < s:LocMarker
                 FREE_ADDRESS(r);
               }
 
+LabelInline = Str
+            | Endline
+            | Space
+            | RawHtml
+            | Entity
+            | EscapedChar
+            | Symbol
+
 Label = < s:LocMarker
         '[' ( !'^' &{ EXT(pmh_EXT_NOTES) } | &. &{ !EXT(pmh_EXT_NOTES) } )
-        < ( !']' Inline )* >
+        < ( !']' !'[' LabelInline )* >
         { s->label = COPY_YYTEXT_ORIG(); }
         ']' >
         {
