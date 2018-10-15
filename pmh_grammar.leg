@@ -167,7 +167,7 @@ HorizontalRule = < NonindentSpace
                  ( '*' Sp '*' Sp '*' (Sp '*')*
                  | '-' Sp '-' Sp '-' (Sp '-')*
                  | '_' Sp '_' Sp '_' (Sp '_')*)
-                 Sp Newline > BlankLine+
+                 Sp Newline >
                  { ADD(elem(pmh_HRULE)); }
 
 Bullet = !HorizontalRule NonindentSpace < ('+' | '*' | '-') > Spacechar+
