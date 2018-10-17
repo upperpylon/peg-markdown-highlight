@@ -152,8 +152,10 @@ FencedCodeBlock = < s:LocMarker
                   { ADD(elem(pmh_FENCEDCODEBLOCK)); }
 
 DisplayFormula = &{ EXT(pmh_EXT_MATH) }
-                 NonindentSpace < "$$" (!'$' .)* "$$" > Spacechar* Newline
+                 NonindentSpace < "$$" (!'$' .)* "$$" > Sp FormulaNumber? Sp Newline
                  { ADD(elem(pmh_DISPLAYFORMULA)); }
+
+FormulaNumber = '(' (!')' !'$' !Newline .)+ ')'
 
 InlineEquation = &{ EXT(pmh_EXT_MATH) }
                  < '$' &{ IEP_PRE } ( InlineEquationSingle | InlineEquationMultiple ) ![0-9] >
