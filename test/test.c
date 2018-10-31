@@ -75,7 +75,7 @@ void print_result_debug_info(pmh_element *elem[])
 void test(char *content)
 {
     pmh_element **result;
-    int exts = pmh_EXT_MATH;
+    int exts = pmh_EXT_MATH | pmh_EXT_MATH_RAW;
     pmh_markdown_to_elements(content, exts, &result);
 
     print_result_debug_info(result);

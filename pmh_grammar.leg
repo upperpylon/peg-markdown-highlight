@@ -49,6 +49,32 @@ bool inline_equation_predict_post(char *buf, int pos)
 #define IEP_PRE         inline_equation_predict_pre(G->buf, G->pos)
 #define IEP_POST        inline_equation_predict_post(G->buf, G->pos)
 
+// Number of display formula raw opening
+unsigned char nr_dfr = 0;
+
+bool start_dfr()
+{
+    nr_dfr = 1;
+    return true;
+}
+
+bool inc_dfr()
+{
+    ++nr_dfr;
+    return true;
+}
+
+bool dec_dfr()
+{
+    --nr_dfr;
+    return true;
+}
+
+bool nested_dfr()
+{
+    return nr_dfr > 1;
+}
+
 %}
 
 Doc =       FrontMatter ( Block )*
@@ -152,8 +178,25 @@ FencedCodeBlock = < s:LocMarker
                   { ADD(elem(pmh_FENCEDCODEBLOCK)); }
 
 DisplayFormula = &{ EXT(pmh_EXT_MATH) }
-                 NonindentSpace < "$$" (!'$' .)* "$$" > Sp FormulaNumber? Sp Newline
-                 { ADD(elem(pmh_DISPLAYFORMULA)); }
+                 ( DisplayFormulaDollar | DisplayFormulaRaw )
+
+DisplayFormulaDollar = NonindentSpace < "$$" (!'$' .)* "$$" > Sp FormulaNumber? Sp Newline
+                       { ADD(elem(pmh_DISPLAYFORMULA)); }
+
+DisplayFormulaRaw = &{ EXT(pmh_EXT_MATH_RAW) }
+                    NonindentSpace
+                    < DisplayFormulaRawStart &{ start_dfr() } Spnl
+                      ( ( DisplayFormulaRawStart &{ inc_dfr() } )
+                        | ( &{ nested_dfr() } DisplayFormulaRawEnd &{ dec_dfr() } )
+                        | (!DisplayFormulaRawEnd !DisplayFormulaRawStart !(Newline Newline+) .) )*
+                      &{ !nested_dfr() } DisplayFormulaRawEnd &{ dec_dfr() } > Sp Newline
+                    { ADD(elem(pmh_DISPLAYFORMULA)); }
+
+DisplayFormulaRawStart = "\\begin" Sp '{' DisplayFormulaRawMark '}'
+
+DisplayFormulaRawEnd = "\\end" Sp '{' DisplayFormulaRawMark '}'
+
+DisplayFormulaRawMark = (!'{' !'}' Nonspacechar)+
 
 FormulaNumber = '(' (!')' !'$' !Newline .)+ ')'
 
