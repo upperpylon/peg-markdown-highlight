@@ -1,7 +1,9 @@
-\begin {equation}
-\begin {abc}
+\begin{equation}
+\begin{abc}
 d
-\end {abc}
-\begin {abc}
-\end {abc}
-\end {equation}
+\end{abc}
+\begin{abc}
+\end{abc}
+\end{equation}
+
+$$ab\text{abc $dsef$ ksjekfj}cdesf$$

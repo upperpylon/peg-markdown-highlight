@@ -180,8 +180,13 @@ FencedCodeBlock = < s:LocMarker
 DisplayFormula = &{ EXT(pmh_EXT_MATH) }
                  ( DisplayFormulaDollar | DisplayFormulaRaw )
 
-DisplayFormulaDollar = NonindentSpace < "$$" (!'$' .)* "$$" > Sp FormulaNumber? Sp Newline
+DisplayFormulaDollar = NonindentSpace
+                       < "$$"
+                         (!'$$' .)*
+                         "$$" > Sp FormulaNumber? Sp Newline
                        { ADD(elem(pmh_DISPLAYFORMULA)); }
+
+# DisplayFormulaDollarText = "\\text" '{' (!"$$" !'{' !'}' .)+ '}'
 
 DisplayFormulaRaw = &{ EXT(pmh_EXT_MATH_RAW) }
                     NonindentSpace
@@ -192,9 +197,9 @@ DisplayFormulaRaw = &{ EXT(pmh_EXT_MATH_RAW) }
                       &{ !nested_dfr() } DisplayFormulaRawEnd &{ dec_dfr() } > Sp Newline
                     { ADD(elem(pmh_DISPLAYFORMULA)); }
 
-DisplayFormulaRawStart = "\\begin" Sp '{' DisplayFormulaRawMark '}'
+DisplayFormulaRawStart = "\\begin" '{' DisplayFormulaRawMark '}'
 
-DisplayFormulaRawEnd = "\\end" Sp '{' DisplayFormulaRawMark '}'
+DisplayFormulaRawEnd = "\\end" '{' DisplayFormulaRawMark '}'
 
 DisplayFormulaRawMark = (!'{' !'}' Nonspacechar)+
 
