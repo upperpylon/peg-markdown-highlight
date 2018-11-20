@@ -49,6 +49,15 @@ bool inline_equation_predict_post(char *buf, int pos)
 #define IEP_PRE         inline_equation_predict_pre(G->buf, G->pos)
 #define IEP_POST        inline_equation_predict_post(G->buf, G->pos)
 
+// Do not allow whitespace before ending ~~
+bool strike_predict_post(char *buf, int pos)
+{
+    unsigned char ch = buf[pos - 1];
+    return ch != '\n' && ch != '\r' && ch != ' ' && ch != '\t';
+}
+
+#define STRIKE_POST     strike_predict_post(G->buf, G->pos)
+
 // Number of display formula raw opening
 unsigned char nr_dfr = 0;
 
@@ -585,7 +594,7 @@ Strike = &{ EXT(pmh_EXT_STRIKE) }
          < s:LocMarker
          "~~" !Whitespace
          ( !"~~" Inline )+
-         "~~" >
+         &{ STRIKE_POST } "~~" >
          { ADD(elem_s(pmh_STRIKE)); }
 
 Image = '!' ( ExplicitLink | ExplicitLinkSize | ReferenceLink )

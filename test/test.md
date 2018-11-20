@@ -1,9 +1,7 @@
-\begin{equation}
-\begin{abc}
-d
-\end{abc}
-\begin{abc}
-\end{abc}
-\end{equation}
+~~abc~~
 
-$$ab\text{abc $dsef$ ksjekfj}cdesf$$
+~~ def~~
+
+~~hij ~~
+
+~~op q~~
