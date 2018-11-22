@@ -174,16 +174,28 @@ Verbatim =     < s:LocMarker
                  ( VerbatimChunk )+ >
                  { ADD(elem_s(pmh_VERBATIM)); }
 
-FencedCodeBlockStart = "```" (!Newline !'`' .)* Newline
+FencedCodeBlockStartTick = "```" (!Newline !'`' .)* Newline
 
-FencedCodeBlockChunk = !FencedCodeBlockEnd (!Newline .)* Newline
+FencedCodeBlockChunkTick = !FencedCodeBlockEndTick (!Newline .)* Newline
 
-FencedCodeBlockEnd = "```" Spacechar* Newline
+FencedCodeBlockEndTick = "```" Spacechar* Newline
+
+FencedCodeBlockStartTidle = "~~~" (!Newline !'~' .)* Newline
+
+FencedCodeBlockChunkTidle = !FencedCodeBlockEndTidle (!Newline .)* Newline
+
+FencedCodeBlockEndTidle = "~~~" Spacechar* Newline
+
+FencedCodeBlockTick = FencedCodeBlockStartTick
+                      FencedCodeBlockChunkTick*
+                      FencedCodeBlockEndTick
+
+FencedCodeBlockTidle = FencedCodeBlockStartTidle
+                       FencedCodeBlockChunkTidle*
+                       FencedCodeBlockEndTidle
 
 FencedCodeBlock = < s:LocMarker
-                    FencedCodeBlockStart
-                    FencedCodeBlockChunk*
-                    FencedCodeBlockEnd >
+                    (FencedCodeBlockTick | FencedCodeBlockTidle) >
                   { ADD(elem(pmh_FENCEDCODEBLOCK)); }
 
 DisplayFormula = &{ EXT(pmh_EXT_MATH) }
