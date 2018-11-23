@@ -188,6 +188,9 @@ static char **get_element_type_names()
         elem_type_names[pmh_DISPLAYFORMULA] = "DISPLAYFORMULA";
         elem_type_names[pmh_INLINEEQUATION] = "INLINEEQUATION";
         elem_type_names[pmh_MARK] = "MARK";
+        elem_type_names[pmh_TABLE] = "TABLE";
+        elem_type_names[pmh_TABLEHEADER] = "TABLEHEADER";
+        elem_type_names[pmh_TABLEBORDER] = "TABLEBORDER";
     }
     return elem_type_names;
 }

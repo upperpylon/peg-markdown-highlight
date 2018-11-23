@@ -115,6 +115,7 @@ Block =     BlankLine*
             | Heading
             | OrderedList
             | BulletList
+            | Table
             | HtmlBlock
             | StyleBlock
             | Para
@@ -233,6 +234,25 @@ InlineEquation = &{ EXT(pmh_EXT_MATH) }
 InlineEquationSingle = !'$' !'\\' Nonspacechar '$'
 
 InlineEquationMultiple = !'$' Nonspacechar (!'$' !Newline .)+ '$' &{ IEP_POST }
+
+Table = &{ EXT(pmh_EXT_TABLE) }
+        < s:LocMarker
+          TableHeader
+          TableDelimiter
+          TableLine* >
+        { ADD(elem_s(pmh_TABLE)); }
+
+TableLine = TableBorder TableCell+ Sp Newline
+
+TableCell = Sp ( !'|' !Newline Inline )* TableBorder
+
+TableDelimiter = TableBorder ( Sp ':'? '-'+ ':'?  Sp TableBorder )+ Sp Newline
+
+TableHeader = < s:LocMarker TableLine >
+              { ADD(elem_s(pmh_TABLEHEADER)); }
+
+TableBorder = < '|' >
+              { ADD(elem(pmh_TABLEBORDER)); }
 
 HorizontalRule = < NonindentSpace
                  ( '*' Sp '*' Sp '*' (Sp '*')*
@@ -840,6 +860,7 @@ SkipBlock = ( !BlankLine RawLine )+ BlankLine*
 
 ExtendedSpecialChar = &{ EXT(pmh_EXT_NOTES) } ( '^' )
                       | &{ EXT(pmh_EXT_MATH) } ( '$' )
+                      | &{ EXT(pmh_EXT_TABLE) } ( '|' )
 
 NoteReference = &{ EXT(pmh_EXT_NOTES) }
                 < RawNoteReference >
