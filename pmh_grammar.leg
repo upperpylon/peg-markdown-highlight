@@ -175,29 +175,33 @@ Verbatim =     < s:LocMarker
                  ( VerbatimChunk )+ >
                  { ADD(elem_s(pmh_VERBATIM)); }
 
-FencedCodeBlockStartTick = "```" (!Newline !'`' .)* Newline
+FencedCodeBlockStartTick = "```" (!Newline !'`' .)*
+
+FencedCodeBlockStartTickLine = FencedCodeBlockStartTick Newline
 
 FencedCodeBlockChunkTick = !FencedCodeBlockEndTick (!Newline .)* Newline
 
 FencedCodeBlockEndTick = "```" Spacechar* Newline
 
-FencedCodeBlockStartTidle = "~~~" (!Newline !'~' .)* Newline
+FencedCodeBlockStartTidle = "~~~" (!Newline !'~' .)*
+
+FencedCodeBlockStartTidleLine = FencedCodeBlockStartTidle Newline
 
 FencedCodeBlockChunkTidle = !FencedCodeBlockEndTidle (!Newline .)* Newline
 
 FencedCodeBlockEndTidle = "~~~" Spacechar* Newline
 
-FencedCodeBlockTick = FencedCodeBlockStartTick
-                      FencedCodeBlockChunkTick*
-                      FencedCodeBlockEndTick
+FencedCodeBlockTick = < FencedCodeBlockStartTickLine
+                        FencedCodeBlockChunkTick*
+                        FencedCodeBlockEndTick >
+                      { ADD(elem(pmh_FENCEDCODEBLOCK)); }
 
-FencedCodeBlockTidle = FencedCodeBlockStartTidle
-                       FencedCodeBlockChunkTidle*
-                       FencedCodeBlockEndTidle
+FencedCodeBlockTidle = < FencedCodeBlockStartTidleLine
+                         FencedCodeBlockChunkTidle*
+                         FencedCodeBlockEndTidle >
+                       { ADD(elem(pmh_FENCEDCODEBLOCK)); }
 
-FencedCodeBlock = < s:LocMarker
-                    (FencedCodeBlockTick | FencedCodeBlockTidle) >
-                  { ADD(elem(pmh_FENCEDCODEBLOCK)); }
+FencedCodeBlock = FencedCodeBlockTick | FencedCodeBlockTidle
 
 DisplayFormula = &{ EXT(pmh_EXT_MATH) }
                  ( DisplayFormulaDollar | DisplayFormulaRaw )
@@ -565,7 +569,7 @@ Space = Spacechar+
 
 Str = NormalChar (NormalChar | '_'+ &Alphanumeric)*
 
-EscapedChar =   '\\' !Newline [-\\`|*_{}[\]()#+.!><]
+EscapedChar =   '\\' !Newline ( [-\\`~|*_{}[\]()#+.!><] | ExtendedSpecialChar )
 
 Entity =    < s:LocMarker
             ( HexEntity | DecEntity | CharEntity ) >
@@ -575,6 +579,8 @@ Endline =   LineBreak | TerminalEndline | NormalEndline
 
 NormalEndline =   Sp Newline !BlankLine !'>' !AtxStart
                   !(Line ('='+ | '-'+) Newline)
+                  !FencedCodeBlockStartTick
+                  !FencedCodeBlockStartTidle
 
 TerminalEndline = Sp Newline Eof
 
@@ -785,7 +791,7 @@ Ticks5 = < "`````" > !'`' { $$ = elem(pmh_NO_TYPE); }
 
 Code = < ( s:Ticks1 Sp ( ( !'`' Nonspacechar )+ | !Ticks1 '`'+ | !( Sp Ticks1 ) ( Spacechar | Newline !BlankLine ) )+ Sp Ticks1
        | s:Ticks2 Sp ( ( !'`' Nonspacechar )+ | !Ticks2 '`'+ | !( Sp Ticks2 ) ( Spacechar | Newline !BlankLine ) )+ Sp Ticks2
-       | s:Ticks3 Sp ( ( !'`' Nonspacechar )+ | !Ticks3 '`'+ | !( Sp Ticks3 ) ( Spacechar | Newline !BlankLine ) )+ Sp Ticks3
+       | !FencedCodeBlockStartTickLine s:Ticks3 Sp ( ( !'`' Nonspacechar )+ | !Ticks3 '`'+ | !( Sp Ticks3 ) ( Spacechar | Newline !BlankLine ) )+ Sp Ticks3
        | s:Ticks4 Sp ( ( !'`' Nonspacechar )+ | !Ticks4 '`'+ | !( Sp Ticks4 ) ( Spacechar | Newline !BlankLine ) )+ Sp Ticks4
        | s:Ticks5 Sp ( ( !'`' Nonspacechar )+ | !Ticks5 '`'+ | !( Sp Ticks5 ) ( Spacechar | Newline !BlankLine ) )+ Sp Ticks5
        ) >
