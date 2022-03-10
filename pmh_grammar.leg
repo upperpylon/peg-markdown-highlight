@@ -207,10 +207,12 @@ DisplayFormula = &{ EXT(pmh_EXT_MATH) }
                  ( DisplayFormulaDollar | DisplayFormulaRaw )
 
 DisplayFormulaDollar = NonindentSpace
-                       < "$$"
-                         (!'$$' .)*
-                         "$$" > Sp FormulaNumber? Sp Newline
+                       < DisplayFormulaDollarMark
+                         (!DisplayFormulaDollarMark .)*
+                         DisplayFormulaDollarMark > Sp FormulaNumber? Sp Newline
                        { ADD(elem(pmh_DISPLAYFORMULA)); }
+
+DisplayFormulaDollarMark = "$$"
 
 # DisplayFormulaDollarText = "\\text" '{' (!"$$" !'{' !'}' .)+ '}'
 
@@ -581,6 +583,7 @@ NormalEndline =   Sp Newline !BlankLine !'>' !AtxStart
                   !(Line ('='+ | '-'+) Newline)
                   !FencedCodeBlockStartTick
                   !FencedCodeBlockStartTidle
+                  (&{ EXT(pmh_EXT_MATH) } !DisplayFormulaDollarMark)
 
 TerminalEndline = Sp Newline Eof
 
