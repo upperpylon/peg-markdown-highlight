@@ -167,6 +167,7 @@ static char **get_element_type_names()
         elem_type_names[pmh_HTML_ENTITY] = "HTML_ENTITY";
         elem_type_names[pmh_EMPH] = "EMPH";
         elem_type_names[pmh_STRONG] = "STRONG";
+        elem_type_names[pmh_UNDERLINE] = "UNDERLINE";
         elem_type_names[pmh_LIST_BULLET] = "LIST_BULLET";
         elem_type_names[pmh_LIST_ENUMERATOR] = "LIST_ENUMERATOR";
         elem_type_names[pmh_COMMENT] = "COMMENT";

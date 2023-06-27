@@ -615,7 +615,7 @@ EmphUl =    < s:LocMarker
             | StrongUl
             )+
             '_' >
-            { ADD(elem_s(pmh_EMPH)); }
+            { ADD(elem_s(pmh_UNDERLINE)); }
 
 Strong = StrongStar | StrongUl
 

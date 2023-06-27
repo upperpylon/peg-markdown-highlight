@@ -34,6 +34,7 @@ typedef enum
     pmh_HTML_ENTITY,        /**< HTML special entity definition */
     pmh_EMPH,               /**< Emphasized text */
     pmh_STRONG,             /**< Strong text */
+    pmh_UNDERLINE,          /**< Underline text */
     pmh_LIST_BULLET,        /**< Bullet for an unordered list item */
     pmh_LIST_ENUMERATOR,    /**< Enumerator for an ordered list item */
     pmh_COMMENT,            /**< (HTML) Comment */
