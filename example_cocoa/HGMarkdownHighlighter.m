@@ -353,16 +353,11 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 
 - (void) applyVisibleRangeHighlighting
 {
-	NSRect visibleRect = [[[self.targetTextView enclosingScrollView] contentView] documentVisibleRect];
-    NSLayoutManager *layoutManager = [self.targetTextView layoutManager];
-	NSRange visibleGlyphRange = [layoutManager glyphRangeForBoundingRect:visibleRect inTextContainer:[self.targetTextView textContainer]];
-	NSRange visibleCharRange = [layoutManager characterRangeForGlyphRange:visibleGlyphRange actualGlyphRange:NULL];
-    
 	if (_cachedElements == NULL)
 		return;
     
     @try {
-        [self applyHighlighting:_cachedElements withRange:visibleCharRange];
+        [self applyHighlighting:_cachedElements withRange:NSMakeRange(0, [[self.targetTextView string] length])];
     }
     @catch (NSException *exception) {
         NSLog(@"Exception in -applyHighlighting:withRange: %@", exception);
@@ -423,14 +418,6 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 				   ];
     [[NSRunLoop currentRunLoop] addTimer:self.updateTimer forMode:NSRunLoopCommonModes];
 }
-
-- (void) textViewDidScroll:(NSNotification *)notification
-{
-	if (_cachedElements == NULL)
-		return;
-	[self applyVisibleRangeHighlighting];
-}
-
 
 - (NSArray *) getDefaultStyles
 {
@@ -691,18 +678,6 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
          object:self.targetTextView];
     }
 	
-	NSScrollView *scrollView = [self.targetTextView enclosingScrollView];
-	if (scrollView != nil)
-	{
-		[[scrollView contentView] setPostsBoundsChangedNotifications: YES];
-		[[NSNotificationCenter defaultCenter]
-		 addObserver:self
-		 selector:@selector(textViewDidScroll:)
-		 name:NSViewBoundsDidChangeNotification
-		 object:[scrollView contentView]
-		 ];
-	}
-	
 	self.isActive = YES;
 }
 
@@ -715,19 +690,6 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 	 removeObserver:self
 	 name:NSTextDidChangeNotification
 	 object:self.targetTextView];
-	
-	NSScrollView *scrollView = [self.targetTextView enclosingScrollView];
-	if (scrollView != nil)
-	{
-		// let's not change this here... the user may wish to control it
-		//[[scrollView contentView] setPostsBoundsChangedNotifications: NO];
-		
-		[[NSNotificationCenter defaultCenter]
-		 removeObserver:self
-		 name:NSViewBoundsDidChangeNotification
-		 object:[scrollView contentView]
-		 ];
-	}
 	
 	[self clearElementsCache];
 	self.isActive = NO;
