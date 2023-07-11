@@ -256,7 +256,8 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 	[textStorage removeAttribute:NSLinkAttributeName range:range];
     [textStorage removeAttribute:NSStrikethroughColorAttributeName range:range];
     [textStorage removeAttribute:NSStrikethroughStyleAttributeName range:range];
-    [textStorage addAttribute:NSFontAttributeName value:self.targetTextView.font range:range];
+    NSFont *font = [[[self targetTextView] typingAttributes] objectForKey:NSFontAttributeName] ?: [[self targetTextView] font];
+    [textStorage addAttribute:NSFontAttributeName value:font range:range];
 	if (self.defaultTextColor != nil)
 		[textStorage addAttribute:NSForegroundColorAttributeName value:self.defaultTextColor range:range];
 	else
