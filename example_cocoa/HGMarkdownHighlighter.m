@@ -266,19 +266,43 @@ void styleparsing_error_callback(char *error_message, int line_number, void *con
 
 - (void) readClearTextStylesFromTextView
 {
+	NSFont *font = nil;
+	if([[self targetTextView] respondsToSelector:@selector(manualFont)]) {
+		font = (NSFont *)[[self targetTextView] performSelector:@selector(manualFont)];
+	}
+	if(font == nil) {
+		font = [self.targetTextView font];
+	}
+
+	NSColor *textColor = nil;
+	if([[self targetTextView] respondsToSelector:@selector(manualTextColor)]) {
+		textColor = (NSColor *)[[self targetTextView] performSelector:@selector(manualTextColor)];
+	}
+	if(textColor == nil) {
+		textColor = [self.targetTextView textColor];
+	}
+	
+	NSColor *backgroundColor = nil;
+	if([[self targetTextView] respondsToSelector:@selector(manualBackgroundColor)]) {
+		backgroundColor = (NSColor *)[[self targetTextView] performSelector:@selector(manualBackgroundColor)];
+	}
+	if(backgroundColor == nil) {
+		backgroundColor = [self.targetTextView backgroundColor];
+	}
+
 	_clearFontTraitMask = [self getClearFontTraitMask:
 	 				 	  [[NSFontManager sharedFontManager]
-	  					   traitsOfFont:[self.targetTextView font]]];
+	  					   traitsOfFont:font]];
 	
-	self.defaultTextColor = [self.targetTextView textColor];
+	self.defaultTextColor = textColor;
 	
 	NSMutableDictionary *typingAttrs = [NSMutableDictionary dictionary];
-	if ([self.targetTextView backgroundColor] != nil)
-		typingAttrs[NSBackgroundColorAttributeName] = [self.targetTextView backgroundColor];
-	if ([self.targetTextView textColor] != nil)
-		typingAttrs[NSForegroundColorAttributeName] = [self.targetTextView textColor];
-	if ([self.targetTextView font] != nil)
-		typingAttrs[NSFontAttributeName] = [self.targetTextView font];
+	if (backgroundColor != nil)
+		typingAttrs[NSBackgroundColorAttributeName] = backgroundColor;
+	if (textColor != nil)
+		typingAttrs[NSForegroundColorAttributeName] = textColor;
+	if (font != nil)
+		typingAttrs[NSFontAttributeName] = font;
 	if ([self.targetTextView defaultParagraphStyle] != nil)
 		typingAttrs[NSParagraphStyleAttributeName] = [self.targetTextView defaultParagraphStyle];
 	self.defaultTypingAttributes = typingAttrs;
